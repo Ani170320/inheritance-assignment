@@ -1,0 +1,80 @@
+// Book constructor function
+function Book(title, author, isAvailable = true) {
+    this.title = title;
+    this.author = author;
+    this.isAvailable = isAvailable;
+}
+
+// Member constructor function
+function Member(name) {
+    this.name = name;
+    this.borrowedBooks = [];
+}
+
+// Method to borrow a book
+Member.prototype.borrowBook = function(book) {
+    if (this.borrowedBooks.length >= 3) {
+        console.log(`${this.name} cannot borrow more than 3 books at a time.`);
+        return;
+    }
+    if (book.isAvailable) {
+        book.isAvailable = false;
+        this.borrowedBooks.push(book.title);
+        console.log(`${this.name} borrowed "${book.title}".`);
+    } else {
+        console.log(`Sorry, "${book.title}" is already borrowed.`);
+    }
+};
+
+// Premium Member constructor (inherits from Member)
+function PremiumMember(name) {
+    Member.call(this, name);
+    this.specialCollectionAccess = true;
+}
+
+// Inherit Member prototype
+PremiumMember.prototype = Object.create(Member.prototype);
+PremiumMember.prototype.constructor = PremiumMember;
+
+// Override borrowBook method for premium members
+PremiumMember.prototype.borrowBook = function(book) {
+    if (this.borrowedBooks.length >= 5) {
+        console.log(`${this.name} cannot borrow more than 5 books at a time.`);
+        return;
+    }
+    if (book.isAvailable) {
+        book.isAvailable = false;
+        this.borrowedBooks.push(book.title);
+        console.log(`${this.name} borrowed "${book.title}".`);
+    } else {
+        console.log(`Sorry, "${book.title}" is already borrowed.`);
+    }
+};
+
+// Create some book objects
+const book1 = new Book("JavaScript: The Good Parts", "Douglas Crockford");
+const book2 = new Book("Clean Code", "Robert C. Martin");
+const book3 = new Book("The Pragmatic Programmer", "Andrew Hunt");
+const book4 = new Book("The Mythical Man-Month", "Fred Brooks");
+const book5 = new Book("Design Patterns", "Erich Gamma");
+
+// Create a regular member and a premium member
+const regularMember = new Member("John Doe");
+const premiumMember = new PremiumMember("Jane Smith");
+
+// Demonstrating borrowing books for a regular member
+regularMember.borrowBook(book1);  // Borrowing available book
+regularMember.borrowBook(book2);  // Borrowing available book
+regularMember.borrowBook(book3);  // Borrowing available book
+regularMember.borrowBook(book4);  // Should log: cannot borrow more than 3 books
+
+// Demonstrating borrowing books for a premium member
+premiumMember.borrowBook(book3);  // Borrowing available book
+premiumMember.borrowBook(book4);  // Borrowing available book
+premiumMember.borrowBook(book5);  // Borrowing available book
+premiumMember.borrowBook(book1);  // Borrowing available book
+premiumMember.borrowBook(book2);  // Should log: cannot borrow more than 5 books
+
+// Using bind to create a bound function for borrowing a book
+const boundBorrowBook = regularMember.borrowBook.bind(regularMember);
+boundBorrowBook(book5);  // Borrowing book via bound function
