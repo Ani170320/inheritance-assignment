@@ -1,0 +1,162 @@
+// Device constructor function
+function Device(name, type, status) {
+  this.name = name;
+  this.type = type;
+  this.status = status || 'off'; // Default status is 'off'
+}
+
+// Methods on Device prototype
+Device.prototype.turnOn = function () {
+  this.status = 'on';
+  console.log(`${this.name} is turned on.`);
+};
+
+Device.prototype.turnOff = function () {
+  this.status = 'off';
+  console.log(`${this.name} is turned off.`);
+};
+
+Device.prototype.getStatus = function () {
+  return `${this.name} is currently ${this.status}.`;
+};
+
+// SmartHome constructor function
+function SmartHome(owner, devices = []) {
+  this.owner = owner;
+  this.devices = devices;
+}
+
+// Methods on SmartHome prototype
+SmartHome.prototype.addDevice = function (device) {
+  this.devices.push(device);
+  console.log(`${device.name} added to ${this.owner}'s smart home.`);
+};
+
+SmartHome.prototype.removeDevice = function (deviceName) {
+  this.devices = this.devices.filter(device => device.name !== deviceName);
+  console.log(`${deviceName} removed from ${this.owner}'s smart home.`);
+};
+
+SmartHome.prototype.listDevices = function () {
+  console.log(`Devices in ${this.owner}'s smart home:`);
+  this.devices.forEach(device => console.log(device.name));
+};
+
+// SmartDevice constructor function (inherits from Device)
+function SmartDevice(name, type, status, brand, connectivity) {
+  Device.call(this, name, type, status);
+  this.brand = brand;
+  this.connectivity = connectivity;
+}
+
+// Inherit methods from Device prototype
+SmartDevice.prototype = Object.create(Device.prototype);
+
+// Add new methods for SmartDevice
+SmartDevice.prototype.updateFirmware = async function () {
+  console.log(`Updating firmware for ${this.name}...`);
+  await fetch('https://api.mockserver.com/update'); // Mock fetch
+  console.log(`${this.name}'s firmware updated.`);
+};
+
+SmartDevice.prototype.checkConnectivity = function () {
+  console.log(`${this.name} is ${this.connectivity ? 'connected' : 'disconnected'}.`);
+};
+
+// SmartLight constructor function (inherits from SmartDevice)
+function SmartLight(name, status, brand, connectivity, brightness, color) {
+  SmartDevice.call(this, name, 'light', status, brand, connectivity);
+  this.brightness = brightness;
+  this.color = color;
+}
+
+SmartLight.prototype = Object.create(SmartDevice.prototype);
+
+SmartLight.prototype.adjustBrightness = function (newBrightness) {
+  this.brightness = newBrightness;
+  console.log(`${this.name}'s brightness adjusted to ${this.brightness}.`);
+};
+
+SmartLight.prototype.changeColor = function (newColor) {
+  this.color = newColor;
+  console.log(`${this.name}'s color changed to ${this.color}.`);
+};
+
+// SmartThermostat constructor function (inherits from SmartDevice)
+function SmartThermostat(name, status, brand, connectivity, temperature, mode) {
+  SmartDevice.call(this, name, 'thermostat', status, brand, connectivity);
+  this.temperature = temperature;
+  this.mode = mode;
+}
+
+SmartThermostat.prototype = Object.create(SmartDevice.prototype);
+
+SmartThermostat.prototype.setTemperature = function (newTemperature) {
+  this.temperature = newTemperature;
+  console.log(`${this.name}'s temperature set to ${this.temperature}°C.`);
+};
+
+SmartThermostat.prototype.changeMode = function (newMode) {
+  this.mode = newMode;
+  console.log(`${this.name}'s mode changed to ${this.mode}.`);
+};
+
+// User constructor function
+function User(username, password) {
+  this.username = username;
+  this.password = password;
+}
+
+// User authentication method using async/await and fetch
+User.prototype.authenticate = async function () {
+  const response = await fetch('https://api.mockserver.com/authenticate', {
+    method: 'POST',
+    body: JSON.stringify({ username: this.username, password: this.password }),
+  });
+  const data = await response.json();
+  if (data.success) {
+    console.log('Authentication successful');
+  } else {
+    console.log('Authentication failed');
+  }
+};
+
+// Add/remove devices from user smart home
+User.prototype.addDeviceToHome = function (device, smartHome) {
+  smartHome.addDevice(device);
+};
+
+User.prototype.removeDeviceFromHome = function (deviceName, smartHome) {
+  smartHome.removeDevice(deviceName);
+};
+
+// ---- DEMONSTRATION ----
+
+// Creating instances of devices, smart home, and user
+const smartLight = new SmartLight('Living Room Light', 'off', 'Philips', true, 50, 'white');
+const smartThermostat = new SmartThermostat('Living Room Thermostat', 'off', 'Nest', true, 22, 'cool');
+
+const user = new User('john_doe', 'password123');
+const smartHome = new SmartHome('John Doe');
+
+// User authentication
+user.authenticate();
+
+// Device management
+smartLight.turnOn();
+smartThermostat.turnOn();
+
+// Add devices to smart home
+user.addDeviceToHome(smartLight, smartHome);
+user.addDeviceToHome(smartThermostat, smartHome);
+
+// List devices
+smartHome.listDevices();
+
+// Demonstrate smart device functionality
+smartLight.adjustBrightness(80);
+smartThermostat.setTemperature(24);
+
+// Update firmware and check connectivity
+smartLight.updateFirmware();
+smartThermostat.checkConnectivity();
