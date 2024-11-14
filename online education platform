@@ -1,0 +1,48 @@
+// Base class User
+class User {
+  constructor(name, email) {
+    this.name = name;
+    this.email = email;
+  }
+
+  getDetails() {
+    console.log(`Name: ${this.name}, Email: ${this.email}`);
+  }
+}
+
+// Student class inherits from User
+class Student extends User {
+  constructor(name, email, studentId) {
+    super(name, email); // Call the parent class constructor
+    this.studentId = studentId;
+  }
+
+  enroll() {
+    console.log(`Student ${this.name} has enrolled.`);
+  }
+}
+
+// Instructor class inherits from User
+class Instructor extends User {
+  constructor(name, email, instructorId) {
+    super(name, email); // Call the parent class constructor
+    this.instructorId = instructorId;
+  }
+
+  assignGrade() {
+    console.log(`Instructor ${this.name} assigned a grade.`);
+  }
+}
+
+// Demonstration
+
+// Create instances of Student and Instructor
+const student1 = new Student('Alice', 'alice@example.com', 'S12345');
+const instructor1 = new Instructor('Mr. John', 'john@example.com', 'I98765');
+
+// Call methods of Student and Instructor
+student1.getDetails();  // Logs: Name: Alice, Email: alice@example.com
+student1.enroll();      // Logs: Student Alice has enrolled.
+
+instructor1.getDetails();  // Logs: Name: Mr. John, Email: john@example.com
+instructor1.assignGrade(); // Logs: Instructor Mr. John assigned a grade.
