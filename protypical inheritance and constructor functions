@@ -1,0 +1,79 @@
+function Car(make, model, year, isAvailable = true) {
+    this.make = make;
+    this.model = model;
+    this.year = year;
+    this.isAvailable = isAvailable;
+}
+
+function Customer(name, rentedCars = []) {
+    this.name = name;
+    this.rentedCars = rentedCars;
+}
+
+Customer.prototype.rentCar = function(car) {
+    if (car.isAvailable) {
+        car.isAvailable = false;
+        this.rentedCars.push(car);
+        console.log(`${this.name} rented a ${car.model}`);
+    } else {
+        console.log(`This ${car.model} is already rented.`);
+    }
+};
+
+Customer.prototype.returnCar = function(car) {
+    setTimeout(() => {
+        let carIndex = this.rentedCars.indexOf(car);
+        if (carIndex > -1) {
+            this.rentedCars.splice(carIndex, 1);
+            car.isAvailable = true;
+            console.log(`${this.name} returned ${car.model}`);
+        } else {
+            console.log(`${this.name} did not rent this car`);
+        }
+    }, 2000);
+};
+
+function PremiumCustomer(name, rentedCars = [], discountRate = 0.1) {
+    Customer.call(this, name, rentedCars);
+    this.discountRate = discountRate;
+}
+
+PremiumCustomer.prototype = Object.create(Customer.prototype);
+PremiumCustomer.prototype.constructor = PremiumCustomer;
+
+// Override rentCar to apply discount (if needed for future pricing logic)
+PremiumCustomer.prototype.rentCar = function(car) {
+    if (car.isAvailable) {
+        car.isAvailable = false;
+        this.rentedCars.push(car);
+        console.log(`${this.name} rented a ${car.model} with a discount`);
+    } else {
+        console.log(`This ${car.model} is already rented.`);
+    }
+};
+
+function calculateRentalPrice(car, days, carType) {
+    let basePrice = 50;
+    let carTypeRates = {
+        SUV: 1.2,
+        Sedan: 1.1
+    };
+    let price = basePrice * days;
+    price *= carTypeRates[carType] || 1;
+    
+    return price;
+}
+
+function Maintenance(car, delay) {
+    setTimeout(() => {
+        car.isAvailable = true;
+        console.log(`The ${car.model} has been serviced`);
+    }, delay);
+}
+
+let car1 = new Car("Toyota", "Fortuner", 2021);
+let car2 = new Car("Tata", "Safari", 2020);
+let car3 = new Car("Maruti", "Jimny", 2019);
+
+let customer1 = new Customer("Lokey");
+let premiumCustomer1 = new PremiumCustomer("Aamir", [], 0.15);
